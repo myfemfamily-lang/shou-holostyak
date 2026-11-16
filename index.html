@@ -86,12 +86,12 @@ const CONFIG = {
   host: "Правая рука Майка",
   hostIcon: "🤚",
   // Общая турнирная таблица (Supabase). Пусто = таблица только в браузере участницы.
-  supabaseUrl: "",   // например "https://abcdxyz.supabase.co"
-  supabaseKey: ""    // публичный ключ "anon public" из Supabase → Project Settings → API
+  supabaseUrl: "https://gnpdisuhxryhbuihsypz.supabase.co",   // например "https://abcdxyz.supabase.co"
+  supabaseKey: "sb_publishable_UNbFLbMoicNsxW-hMoeAfg_BDh9tWIR"    // публичный ключ "anon public" из Supabase → Project Settings → API
 };
 
 /* ====== Общая таблица лидеров ====== */
-function dbHeaders(){ return {apikey:CONFIG.supabaseKey, Authorization:"Bearer "+CONFIG.supabaseKey, "Content-Type":"application/json"}; }
+function dbHeaders(){ const h = {apikey:CONFIG.supabaseKey, "Content-Type":"application/json"}; if(CONFIG.supabaseKey.startsWith("eyJ")) h.Authorization = "Bearer "+CONFIG.supabaseKey; return h; }
 async function submitScore(name, roses){
   const r = await fetch(CONFIG.supabaseUrl+"/rest/v1/scores",{method:"POST",headers:{...dbHeaders(),Prefer:"return=minimal"},body:JSON.stringify({name,roses})});
   if(!r.ok) throw new Error("insert "+r.status);
@@ -127,7 +127,6 @@ const FACTS = [
 ];
 
 const TOTAL = QUIZ.length*2 + 10 + FACTS.length;
-const FAKE_LB = [["Промтесса Алина",21],["Zero-shot Катя",18],["Анна-Fine-tune",15],["Маша «Temperature 0.9»",12],["Лена, которая спросила «а что такое промт?»",4]];
 
 const app = document.getElementById("app");
 let S = {player:"", roses:0, step:0};
@@ -155,8 +154,7 @@ function intro(){
     <input id="nm" placeholder="Как вас представить участницам?" maxlength="30" value="${esc(tgName())}">
     <button class="primary" onclick="start()">Войти в шоу 🌹</button>
     </div>
-  </div>
-  <div class="fine">Шуточное шоу. ${CONFIG.supabaseUrl ? "Ваше имя и количество роз попадут в общую турнирную таблицу." : "Ответы и имя хранятся только в вашем браузере."}</div>`;
+  </div>`;
 }
 function start(){
   const v = document.getElementById("nm").value.trim();
@@ -293,7 +291,7 @@ async function final(){
   }
   if(!all){
     const saved = loadLB(); saved.push({n:S.player,r:S.roses}); saveLB(saved.slice(-30));
-    all = [mine].concat(FAKE_LB.map(x=>({n:x[0],r:x[1]}))).concat(saved.slice(0,-1));
+    all = [mine].concat(saved.slice(0,-1));
   }
   all.sort((a,b)=>b.r-a.r);
   const place = all.indexOf(mine)+1;
