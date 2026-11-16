@@ -222,7 +222,7 @@ function renderChips(a){
 function judge(){
   const t = document.getElementById("pr").value;
   const a = analyze(t);
-  if(a.len<15){ document.getElementById("pr").focus(); return; }
+  if(a.len<1){ document.getElementById("pr").focus(); return; }
   haptic();
   let pts = a.hits.filter(Boolean).length*1.6;
   if(a.emoji) pts+=1;
